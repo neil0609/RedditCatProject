@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>ASP.NET</h1>
+    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Getting started</h2>
+        <p>
+            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+            enables a clean separation of concerns and gives you full control over markup
+            for enjoyable, agile development.
+        </p>
+        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Get more libraries</h2>
+        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Web Hosting</h2>
+        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    </div>
+</div>
+
+<br /><br /><br />
+<form class="redditCat">
+    <div class="redditContainer">
+
+    </div>
+</form>
+
+
+
+
+@section scripts {
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            getRedditJson(getRedditJsonSuccess, getRedditJsonError);
+        });
+
+
+        function getRedditJsonSuccess(thisData, status, xhr) {
+            var newData = thisData.data.children;
+            populateFormWithRedditJson(newData);
+        }
+
+        function getRedditJsonError(jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+
+        function getRedditJson(onSuccess, onError) {
+            var url = "https://www.reddit.com/r/cats.json";
+            var settings = {
+                dataType: "json",
+                success: onSuccess,
+                error: onError,
+                type: "GET"
+            }
+            $.ajax(url, settings)
+        }
+
+        function populateFormWithRedditJson(redditData) {
+            for (var i = 0; i < redditData.length; i++)
+            {
+                var newReddit = cloneTemplateForJsonPopulating();
+
+                newReddit.find(".author p").html(redditData[i].data.author);
+                newReddit.find(".redditId").val(redditData[i].data.id);
+                newReddit.find(".title p").html(redditData[i].data.title);
+                newReddit.find(".catIMG img").attr("src", redditData[i].data.preview.images[0].source.url);
+                var me = redditData[i].data.preview.images[0].source.url;
+                console.log(me);
+                $(".redditContainer").append(newReddit);
+            }
+
+        }
+
+        function cloneTemplateForJsonPopulating() {
+            return $($("#redditTemplate").html()).clone();
+        }
+
+        function changeAuthor() {
+            $(".author").val("neil");
+            var pic = "http://r.ddmcdn.com/s_f/o_1/cx_633/cy_0/cw_1725/ch_1725/w_720/APL/uploads/2014/11/too-cute-doggone-it-video-playlist.jpg";
+            $(".catPictures").attr("src", pic);
+
+        }
+
+    </script>
+
+    <script type="text/template" id="redditTemplate">
+            <div class="redditBody">
+                <div>
+                    <label>Author</label>
+                    <div type="text" class="author" name="author">
+                        <p></p>
+                    </div>
+                    <input type="hidden" class="redditId" name="redditId" value="" />
+                </div>
+                <div>
+                    <label>Title</label>
+                    <div class="title" name="title" value="">
+                        <p></p>
+                    </div>
+                </div>
+                <div class="imageContainer">
+                    <label>Pictures</label>
+                    <div class="catIMG">
+                        <img src="" class="catPictures" style="{width: 320, height: 240}" />
+                    </div>
+                </div>
+            </div>
+    </script>
+
+}
+
